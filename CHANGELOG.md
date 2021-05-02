@@ -1,8 +1,9 @@
-## [1.6.0] - May 01, 2021
+## [1.6.0, 1.6.1] - May 01, 2021
 
 #### (Flutter version support: v2.0+)
 
 - Added `platformThemeData` to get access to the platform specific `ThemeData` more easily
+- Fixes material AppBar not picking up elevation from Theme
 
 ## [1.5.0] - April 28, 2021
 
