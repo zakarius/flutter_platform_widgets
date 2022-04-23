@@ -6,6 +6,8 @@
 
 import 'package:flutter/cupertino.dart' show CupertinoAlertDialog;
 import 'package:flutter/material.dart' show AlertDialog;
+import 'package:fluent_ui/fluent_ui.dart' as fluent_ui
+    show ContentDialog, ContentDialogThemeData;
 import 'package:flutter/widgets.dart';
 
 import 'platform.dart';
@@ -98,8 +100,29 @@ class CupertinoAlertDialogData extends _BaseData {
   final Duration? insetAnimationDuration;
 }
 
-class PlatformAlertDialog
-    extends PlatformWidgetBase<CupertinoAlertDialog, AlertDialog> {
+class FluentAlertDialogData extends _BaseData {
+  final fluent_ui.ContentDialogThemeData? style;
+
+  final bool backgroundDismiss;
+  final BoxConstraints constraints;
+
+  FluentAlertDialogData({
+    Key? widgetKey,
+    List<Widget>? actions,
+    Widget? content,
+    Widget? title,
+    this.style,
+    this.backgroundDismiss = false,
+    this.constraints = const BoxConstraints(),
+  }) : super(
+            widgetKey: widgetKey,
+            actions: actions,
+            content: content,
+            title: title);
+}
+
+class PlatformAlertDialog extends PlatformWidgetBase<CupertinoAlertDialog,
+    AlertDialog, fluent_ui.ContentDialog> {
   final Key? widgetKey;
   final List<Widget>? actions;
   final Widget? content;
@@ -107,6 +130,7 @@ class PlatformAlertDialog
 
   final PlatformBuilder<MaterialAlertDialogData>? material;
   final PlatformBuilder<CupertinoAlertDialogData>? cupertino;
+  final PlatformBuilder<FluentAlertDialogData>? fluent;
 
   PlatformAlertDialog({
     Key? key,
@@ -116,6 +140,7 @@ class PlatformAlertDialog
     this.title,
     this.material,
     this.cupertino,
+    this.fluent,
   }) : super(key: key);
 
   @override
@@ -164,6 +189,20 @@ class PlatformAlertDialog
       insetAnimationCurve: curve ?? Curves.decelerate,
       insetAnimationDuration:
           data?.insetAnimationDuration ?? Duration(milliseconds: 100),
+    );
+  }
+
+  @override
+  fluent_ui.ContentDialog createFluentWidget(BuildContext context) {
+    final data = fluent?.call(context, platform(context));
+    return fluent_ui.ContentDialog(
+      key: data?.widgetKey ?? widgetKey,
+      actions: data?.actions ?? actions ?? const <Widget>[],
+      title: data?.title ?? title,
+      content: data?.content ?? content,
+      backgroundDismiss: data?.backgroundDismiss ?? false,
+      constraints: data?.constraints ?? BoxConstraints.tightFor(width: 400),
+      style: data?.style,
     );
   }
 }

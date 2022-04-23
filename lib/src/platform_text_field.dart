@@ -5,7 +5,6 @@
  */
 
 import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
-
 import 'package:flutter/cupertino.dart'
     show
         CupertinoColors,
@@ -279,7 +278,7 @@ class CupertinoTextFieldData {
 }
 
 class PlatformTextField
-    extends PlatformWidgetBase<CupertinoTextField, TextField> {
+    extends PlatformWidgetBase<CupertinoTextField, TextField, Widget> {
   final Key? widgetKey;
 
   final PlatformBuilder<MaterialTextFieldData>? material;
@@ -578,5 +577,10 @@ class PlatformTextField
     return inputDecoration.copyWith(
       hintText: inputDecoration.hintText ?? hintText,
     );
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 }

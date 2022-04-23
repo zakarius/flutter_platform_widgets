@@ -86,7 +86,8 @@ class CupertinoTextButtonData extends _BaseData {
   final bool originalStyle;
 }
 
-class PlatformTextButton extends PlatformWidgetBase<Widget, TextButton> {
+class PlatformTextButton
+    extends PlatformWidgetBase<Widget, TextButton, Widget> {
   final Key? widgetKey;
 
   final VoidCallback? onPressed;
@@ -198,5 +199,10 @@ class PlatformTextButton extends PlatformWidgetBase<Widget, TextButton> {
         color: color ?? data?.color,
       );
     }
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 }

@@ -10,8 +10,11 @@ extension PlatformIconsExt on BuildContext {
   IconData platformIcon({
     required IconData material,
     required IconData cupertino,
-  }) =>
-      isMaterial(this) ? material : cupertino;
+    required IconData fluent,
+  }) {
+    if (isFluent(this)) return fluent;
+    return isMaterial(this) ? material : cupertino;
+  }
 }
 
 class PlatformIcons {
@@ -20,9 +23,11 @@ class PlatformIcons {
   final BuildContext context;
 
   /// Icons: Icons.account_circle : CupertinoIcons.person_crop_circle
-  IconData get accountCircle => isMaterial(context)
-      ? Icons.account_circle_outlined
-      : CupertinoIcons.person_crop_circle;
+  IconData get accountCircle {
+    return isMaterial(context)
+        ? Icons.account_circle_outlined
+        : CupertinoIcons.person_crop_circle;
+  }
 
   /// Icons: Icons.account_circle : CupertinoIcons.person_crop_circle_fill
   IconData get accountCircleSolid => isMaterial(context)
@@ -188,20 +193,24 @@ class PlatformIcons {
       isMaterial(context) ? Icons.cloud : CupertinoIcons.cloud_fill;
 
   /// Icons: Icons.cloud_download_outlined : CupertinoIcons.cloud_download
-  IconData get cloudDownload =>
-      isMaterial(context) ? Icons.cloud_download_outlined : CupertinoIcons.cloud_download;
+  IconData get cloudDownload => isMaterial(context)
+      ? Icons.cloud_download_outlined
+      : CupertinoIcons.cloud_download;
 
   /// Icons: Icons.cloud_download : CupertinoIcons.cloud_download_fill
-  IconData get cloudDownloadSolid =>
-      isMaterial(context) ? Icons.cloud_download : CupertinoIcons.cloud_download_fill;
+  IconData get cloudDownloadSolid => isMaterial(context)
+      ? Icons.cloud_download
+      : CupertinoIcons.cloud_download_fill;
 
   /// Icons: Icons.cloud_upload_outlined : CupertinoIcons.cloud_upload
-  IconData get cloudUpload =>
-      isMaterial(context) ? Icons.cloud_upload_outlined : CupertinoIcons.cloud_upload;
+  IconData get cloudUpload => isMaterial(context)
+      ? Icons.cloud_upload_outlined
+      : CupertinoIcons.cloud_upload;
 
   /// Icons: Icons.cloud_upload : CupertinoIcons.cloud_upload_fill
-  IconData get cloudUploadSolid =>
-      isMaterial(context) ? Icons.cloud_upload : CupertinoIcons.cloud_upload_fill;
+  IconData get cloudUploadSolid => isMaterial(context)
+      ? Icons.cloud_upload
+      : CupertinoIcons.cloud_upload_fill;
 
   /// Icons: Icons.collections : CupertinoIcons.collections
   IconData get collections =>

@@ -102,7 +102,8 @@ class CupertinoSwitchData extends _BaseData {
   final Color? thumbColor;
 }
 
-class PlatformSwitch extends PlatformWidgetBase<CupertinoSwitch, Switch> {
+class PlatformSwitch
+    extends PlatformWidgetBase<CupertinoSwitch, Switch, Widget> {
   final Key? widgetKey;
 
   final bool value;
@@ -171,5 +172,10 @@ class PlatformSwitch extends PlatformWidgetBase<CupertinoSwitch, Switch> {
       trackColor: data?.trackColor,
       thumbColor: data?.thumbColor,
     );
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 }

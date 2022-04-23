@@ -6,6 +6,7 @@
 
 import 'package:flutter/cupertino.dart' show CupertinoNavigationBar;
 import 'package:flutter/material.dart' show AppBar, Brightness, TextTheme;
+import 'package:fluent_ui/fluent_ui.dart' as fluent_ui;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -16,6 +17,8 @@ import 'widget_base.dart';
 
 //the default has alpha which will cause the content to slide under the header for ios
 const Color _kDefaultNavBarBorderColor = const Color(0x4C000000);
+const double _kCompactNavigationPanelWidth = 50.0;
+const double _kOpenNavigationPanelWidth = 320.0;
 
 const Border _kDefaultNavBarBorder = const Border(
   bottom: const BorderSide(
@@ -146,8 +149,36 @@ class CupertinoNavigationBarData extends _BaseData {
   final bool noMaterialParent;
 }
 
-class PlatformAppBar
-    extends PlatformWidgetBase<CupertinoNavigationBar, PreferredSizeWidget> {
+class FluentNavigationAppBar extends _BaseData {
+  final Widget? title;
+  final Color? backgroundColor;
+  final Widget? leading;
+  final Key? widgetKey;
+  final bool? automaticallyImplyLeading;
+  final Widget? actions;
+  final fluent_ui.PaneDisplayMode? displayMode;
+  final Widget? additionalLeading;
+
+  FluentNavigationAppBar({
+    this.title,
+    this.backgroundColor,
+    this.leading,
+    this.widgetKey,
+    this.automaticallyImplyLeading,
+    this.actions,
+    this.displayMode,
+    this.additionalLeading,
+  }) : super(
+          widgetKey: widgetKey,
+          title: title,
+          backgroundColor: backgroundColor,
+          leading: leading,
+          automaticallyImplyLeading: automaticallyImplyLeading,
+        );
+}
+
+class PlatformAppBar extends PlatformWidgetBase<CupertinoNavigationBar,
+    PreferredSizeWidget, Widget> {
   final Key? widgetKey;
 
   final Widget? title;
@@ -158,6 +189,7 @@ class PlatformAppBar
 
   final PlatformBuilder<MaterialAppBarData>? material;
   final PlatformBuilder<CupertinoNavigationBarData>? cupertino;
+  final PlatformBuilder<FluentNavigationAppBar>? fluent;
 
   PlatformAppBar({
     Key? key,
@@ -169,6 +201,7 @@ class PlatformAppBar
     this.automaticallyImplyLeading,
     this.material,
     this.cupertino,
+    this.fluent,
   }) : super(key: key);
 
   @override
@@ -264,6 +297,106 @@ class PlatformAppBar
       transitionBetweenRoutes: data?.transitionBetweenRoutes ?? true,
       brightness: data?.brightness,
       //heroTag: , used above
+    );
+  }
+
+  @override
+  Widget createFluentWidget(fluent_ui.BuildContext context) {
+    final data = fluent?.call(context, platform(context));
+    final fluent_ui.NavigationAppBar appBar = fluent_ui.NavigationAppBar(
+      key: data?.widgetKey ?? widgetKey,
+      title: data?.title ?? title,
+      backgroundColor: data?.backgroundColor ?? backgroundColor,
+      leading: data?.leading ?? leading,
+      automaticallyImplyLeading:
+          data?.automaticallyImplyLeading ?? automaticallyImplyLeading ?? true,
+    );
+
+    final direction = Directionality.of(context);
+    final fluent_ui.PaneDisplayMode displayMode = data?.displayMode ??
+        fluent_ui.InheritedNavigationView.maybeOf(context)?.displayMode ??
+        fluent_ui.PaneDisplayMode.top;
+    final _leading = fluent_ui.NavigationAppBar.buildLeading(
+      context,
+      appBar,
+      displayMode != fluent_ui.PaneDisplayMode.top,
+    );
+    final _title = () {
+      if (appBar.title != null) {
+        assert(fluent_ui.debugCheckHasFluentTheme(context));
+        final theme = fluent_ui.NavigationPaneTheme.of(context);
+        return AnimatedPadding(
+          duration: theme.animationDuration ?? Duration.zero,
+          curve: theme.animationCurve ?? Curves.linear,
+          padding: [
+            fluent_ui.PaneDisplayMode.minimal,
+            fluent_ui.PaneDisplayMode.open
+          ].contains(displayMode)
+              ? EdgeInsets.zero
+              : const EdgeInsets.only(left: 24.0),
+          child: DefaultTextStyle(
+            style: fluent_ui.FluentTheme.of(context).typography.caption ??
+                const TextStyle(),
+            overflow: TextOverflow.clip,
+            maxLines: 1,
+            softWrap: false,
+            child: appBar.title!,
+          ),
+        );
+      } else {
+        return const SizedBox.shrink();
+      }
+    }();
+    late Widget result;
+    switch (displayMode) {
+      case fluent_ui.PaneDisplayMode.top:
+        result = Row(children: [
+          _leading,
+          if (data?.additionalLeading != null) data!.additionalLeading!,
+          _title,
+          if (appBar.actions != null) Expanded(child: appBar.actions!),
+        ]);
+        break;
+      case fluent_ui.PaneDisplayMode.minimal:
+      case fluent_ui.PaneDisplayMode.open:
+      case fluent_ui.PaneDisplayMode.compact:
+        final isMinimalPaneOpen =
+            fluent_ui.InheritedNavigationView.maybeOf(context)
+                    ?.minimalPaneOpen ??
+                false;
+        final double width = displayMode == fluent_ui.PaneDisplayMode.minimal &&
+                !isMinimalPaneOpen
+            ? 0.0
+            : displayMode == fluent_ui.PaneDisplayMode.compact
+                ? _kCompactNavigationPanelWidth
+                : _kOpenNavigationPanelWidth;
+        result = Stack(children: [
+          Row(children: [
+            _leading,
+            if (data?.additionalLeading != null) data!.additionalLeading!,
+            Expanded(child: _title),
+          ]),
+          if (appBar.actions != null)
+            Positioned.directional(
+              textDirection: direction,
+              start: width,
+              end: 0.0,
+              top: 0.0,
+              bottom: 0.0,
+              child: Align(
+                alignment: Alignment.topRight,
+                child: appBar.actions!,
+              ),
+            ),
+        ]);
+        break;
+      default:
+        return const SizedBox.shrink();
+    }
+    return Container(
+      color: appBar.backgroundColor,
+      height: appBar.height,
+      child: result,
     );
   }
 }

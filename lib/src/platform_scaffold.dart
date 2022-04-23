@@ -122,7 +122,7 @@ class CupertinoPageScaffoldData extends _BaseData {
   final String? restorationIdTab;
 }
 
-class PlatformScaffold extends PlatformWidgetBase<Widget, Scaffold> {
+class PlatformScaffold extends PlatformWidgetBase<Widget, Scaffold, Widget> {
   final Key? widgetKey;
 
   final Widget? body;
@@ -282,5 +282,10 @@ class PlatformScaffold extends PlatformWidgetBase<Widget, Scaffold> {
       padding: EdgeInsets.only(top: top, bottom: bottom),
       child: child,
     );
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 }

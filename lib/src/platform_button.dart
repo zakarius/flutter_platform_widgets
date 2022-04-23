@@ -4,6 +4,7 @@
  * See LICENSE for distribution and usage details.
  */
 
+import 'package:fluent_ui/fluent_ui.dart' as fluent_ui;
 import 'package:flutter/cupertino.dart' show CupertinoButton, CupertinoColors;
 import 'package:flutter/material.dart'
     show
@@ -229,8 +230,8 @@ class CupertinoFilledButtonData extends _BaseData {
 
 @Deprecated(
     'Use PlatformTextButton or PlatformElevatedButton instead. Material FlatButton and RaisedButton are deprecated.')
-class PlatformButton
-    extends PlatformWidgetBase<CupertinoButton, MaterialButton> {
+class PlatformButton extends PlatformWidgetBase<CupertinoButton, MaterialButton,
+    fluent_ui.Button> {
   final Key? widgetKey;
 
   final void Function()? onPressed;
@@ -239,10 +240,15 @@ class PlatformButton
   final EdgeInsetsGeometry? padding;
   final Color? disabledColor;
 
+  // material
   final PlatformBuilder<MaterialRaisedButtonData>? material;
   final PlatformBuilder<MaterialFlatButtonData>? materialFlat;
+  // cupertino
   final PlatformBuilder<CupertinoButtonData>? cupertino;
   final PlatformBuilder<CupertinoFilledButtonData>? cupertinoFilled;
+  // fluent
+  final PlatformBuilder<FluentRaisedButtonData>? fluent;
+  final PlatformBuilder<FluentFlatButtonData>? fluentFlat;
 
   PlatformButton({
     Key? key,
@@ -256,6 +262,8 @@ class PlatformButton
     this.materialFlat,
     this.cupertino,
     this.cupertinoFilled,
+    this.fluent,
+    this.fluentFlat,
   }) : super(key: key);
 
   @override
@@ -376,4 +384,78 @@ class PlatformButton
       alignment: data?.alignment ?? Alignment.center,
     );
   }
+
+  @override
+  fluent_ui.Button createFluentWidget(BuildContext context) {
+    final filled = fluentFlat;
+    if (filled != null) {
+      final data = filled(context, platform(context));
+
+      assert(data.child != null || child != null);
+
+      return fluent_ui.FilledButton(
+        key: data.widgetKey ?? widgetKey,
+        child: data.child ?? child!,
+        onPressed: data.onPressed ?? onPressed,
+        autofocus: data.autofocus ?? false,
+        focusNode: data.focusNode,
+        onLongPress: data.onLongPress,
+        style: data.style,
+      );
+    }
+
+    final data = fluent?.call(context, platform(context));
+
+    assert(data?.child != null || child != null);
+
+    return fluent_ui.Button(
+      key: data?.widgetKey ?? widgetKey,
+      child: data?.child ?? child!,
+      onPressed: data?.onPressed ?? onPressed,
+      autofocus: data?.autofocus ?? false,
+      focusNode: data?.focusNode,
+      onLongPress: data?.onLongPress,
+      style: data?.style,
+    );
+  }
+}
+
+class FluentFlatButtonData {
+  final Key? widgetKey;
+  final Widget? child;
+  final VoidCallback? onPressed;
+  final bool? autofocus;
+  final FocusNode? focusNode;
+  final VoidCallback? onLongPress;
+  final fluent_ui.ButtonStyle? style;
+
+  const FluentFlatButtonData({
+    this.widgetKey,
+    this.child,
+    this.onPressed,
+    this.autofocus,
+    this.focusNode,
+    this.onLongPress,
+    this.style,
+  });
+}
+
+class FluentRaisedButtonData {
+  final Key? widgetKey;
+  final Widget? child;
+  final VoidCallback? onPressed;
+  final bool? autofocus;
+  final FocusNode? focusNode;
+  final VoidCallback? onLongPress;
+  final fluent_ui.ButtonStyle? style;
+
+  const FluentRaisedButtonData({
+    this.widgetKey,
+    this.child,
+    this.onPressed,
+    this.autofocus,
+    this.focusNode,
+    this.onLongPress,
+    this.style,
+  });
 }

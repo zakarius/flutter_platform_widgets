@@ -101,7 +101,8 @@ class CupertinoSliderData extends _BaseData {
             thumbColor: thumbColor);
 }
 
-class PlatformSlider extends PlatformWidgetBase<CupertinoSlider, Slider> {
+class PlatformSlider
+    extends PlatformWidgetBase<CupertinoSlider, Slider, Widget> {
   final Key? widgetKey;
 
   final double value;
@@ -175,5 +176,10 @@ class PlatformSlider extends PlatformWidgetBase<CupertinoSlider, Slider> {
       min: data?.min ?? min,
       thumbColor: data?.thumbColor ?? thumbColor ?? CupertinoColors.white,
     );
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 }

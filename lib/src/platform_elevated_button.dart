@@ -87,7 +87,7 @@ class CupertinoElevatedButtonData extends _BaseData {
 }
 
 class PlatformElevatedButton
-    extends PlatformWidgetBase<Widget, ElevatedButton> {
+    extends PlatformWidgetBase<Widget, ElevatedButton, Widget> {
   final Key? widgetKey;
 
   final VoidCallback? onPressed;
@@ -199,5 +199,10 @@ class PlatformElevatedButton
       }
       return button;
     }
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 }

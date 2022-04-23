@@ -9,14 +9,16 @@ import 'package:flutter/widgets.dart';
 import 'platform.dart';
 import 'widget_base.dart';
 
-class PlatformWidget extends PlatformWidgetBase<Widget, Widget> {
+class PlatformWidget extends PlatformWidgetBase<Widget, Widget, Widget> {
   final PlatformBuilder<Widget?>? material;
   final PlatformBuilder<Widget?>? cupertino;
+  final PlatformBuilder<Widget?>? fluent;
 
   PlatformWidget({
     Key? key,
     this.cupertino,
     this.material,
+    this.fluent,
   }) : super(key: key);
 
   @override
@@ -27,5 +29,10 @@ class PlatformWidget extends PlatformWidgetBase<Widget, Widget> {
   @override
   Widget createCupertinoWidget(BuildContext context) {
     return cupertino?.call(context, platform(context)) ?? SizedBox.shrink();
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return fluent?.call(context, platform(context)) ?? SizedBox.shrink();
   }
 }

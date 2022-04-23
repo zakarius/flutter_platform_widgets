@@ -6,6 +6,7 @@
 
 import 'dart:ui';
 
+import 'package:fluent_ui/fluent_ui.dart' as fluent_ui;
 import 'package:flutter/cupertino.dart'
     show
         CupertinoDynamicColor,
@@ -64,11 +65,11 @@ PlatformStyle _platformStyle(BuildContext context) {
     case TargetPlatform.iOS:
       return platformStyle?.ios ?? PlatformStyle.Cupertino;
     case TargetPlatform.linux:
-      return platformStyle?.linux ?? PlatformStyle.Material;
+      return platformStyle?.linux ?? PlatformStyle.Fluent;
     case TargetPlatform.macOS:
       return platformStyle?.macos ?? PlatformStyle.Cupertino;
     case TargetPlatform.windows:
-      return platformStyle?.windows ?? PlatformStyle.Material;
+      return platformStyle?.windows ?? PlatformStyle.Fluent;
   }
 }
 
@@ -80,14 +81,24 @@ bool isCupertino(BuildContext context) {
   return _platformStyle(context) == PlatformStyle.Cupertino;
 }
 
+bool isFluent(BuildContext context) {
+  return _platformStyle(context) == PlatformStyle.Fluent;
+}
+
 T platformThemeData<T>(
   BuildContext context, {
   required T Function(ThemeData theme) material,
-  required T Function(CupertinoThemeData theme) cupertino,
+  T Function(CupertinoThemeData theme)? cupertino,
+  T Function(fluent_ui.ThemeData theme)? fluent,
 }) {
-  return isMaterial(context)
-      ? material(Theme.of(context))
-      : cupertino(CupertinoTheme.of(context));
+  if (isFluent(context) && fluent != null) {
+    return fluent(fluent_ui.FluentTheme.of(context));
+  }
+
+  if (isCupertino(context) && cupertino != null) {
+    return cupertino(CupertinoTheme.of(context));
+  }
+  return material(Theme.of(context));
 }
 
 PlatformTarget platform(BuildContext context) {
@@ -121,7 +132,7 @@ Future<T?> showPlatformDialog<T>({
   Color? materialBarrierColor = Colors.black54,
   String? barrierLabel,
 }) {
-  if (isMaterial(context)) {
+  if (isMaterial(context) || isFluent(context)) {
     return showDialog<T>(
       context: context,
       builder: builder,
@@ -201,7 +212,18 @@ Future<T?> showPlatformModalSheet<T>({
   MaterialModalSheetData? material,
   CupertinoModalSheetData? cupertino,
 }) {
-  if (isMaterial(context)) {
+  if (isCupertino(context)) {
+    return showCupertinoModalPopup<T>(
+      context: context,
+      builder: builder,
+      filter: cupertino?.imageFilter,
+      semanticsDismissible: cupertino?.semanticsDismissible,
+      useRootNavigator: cupertino?.useRootNavigator ?? true,
+      barrierColor: cupertino?.barrierColor ?? _kModalBarrierColor,
+      barrierDismissible: cupertino?.barrierDismissible ?? true,
+      routeSettings: cupertino?.routeSettings,
+    );
+  } else {
     return showModalBottomSheet<T>(
       context: context,
       builder: builder,
@@ -217,17 +239,6 @@ Future<T?> showPlatformModalSheet<T>({
       routeSettings: material?.routeSettings,
       transitionAnimationController: material?.transitionAnimationController,
       constraints: material?.constraints,
-    );
-  } else {
-    return showCupertinoModalPopup<T>(
-      context: context,
-      builder: builder,
-      filter: cupertino?.imageFilter,
-      semanticsDismissible: cupertino?.semanticsDismissible,
-      useRootNavigator: cupertino?.useRootNavigator ?? true,
-      barrierColor: cupertino?.barrierColor ?? _kModalBarrierColor,
-      barrierDismissible: cupertino?.barrierDismissible ?? true,
-      routeSettings: cupertino?.routeSettings,
     );
   }
 }

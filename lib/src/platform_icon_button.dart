@@ -103,7 +103,8 @@ class MaterialIconButtonData extends _BaseData {
   final MouseCursor? mouseCursor;
 }
 
-class PlatformIconButton extends PlatformWidgetBase<CupertinoButton, Widget> {
+class PlatformIconButton
+    extends PlatformWidgetBase<CupertinoButton, Widget, Widget> {
   final Key? widgetKey;
 
   final Widget? icon;
@@ -184,5 +185,10 @@ class PlatformIconButton extends PlatformWidgetBase<CupertinoButton, Widget> {
           CupertinoColors.quaternarySystemFill,
       alignment: data?.alignment ?? Alignment.center,
     );
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 }

@@ -157,6 +157,7 @@ class PlatformSettingsData {
 enum PlatformStyle {
   Material,
   Cupertino,
+  Fluent,
 }
 
 class PlatformStyleData {
@@ -172,9 +173,9 @@ class PlatformStyleData {
     this.android = PlatformStyle.Material,
     this.ios = PlatformStyle.Cupertino,
     this.macos = PlatformStyle.Cupertino,
-    this.windows = PlatformStyle.Material,
+    this.windows = PlatformStyle.Fluent,
     this.web = PlatformStyle.Material,
     this.fuchsia = PlatformStyle.Material,
-    this.linux = PlatformStyle.Material,
+    this.linux = PlatformStyle.Fluent,
   });
 }

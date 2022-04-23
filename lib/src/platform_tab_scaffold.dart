@@ -151,7 +151,7 @@ class CupertinoTabScaffoldData extends _BaseData {
   final String? restorationScopeIdTabView;
 }
 
-class PlatformTabScaffold extends PlatformWidgetBase<Widget, Widget> {
+class PlatformTabScaffold extends PlatformWidgetBase<Widget, Widget, Widget> {
   final Key? widgetKey;
 
   final Widget Function(BuildContext context, int index)? bodyBuilder;
@@ -290,6 +290,11 @@ class PlatformTabScaffold extends PlatformWidgetBase<Widget, Widget> {
       onEndDrawerChanged: data?.onEndDrawerChanged,
       restorationId: data?.restorationId ?? restorationId,
     );
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 
   @override

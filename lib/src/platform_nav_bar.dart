@@ -125,7 +125,8 @@ class MaterialNavBarData extends _BaseData {
   final BottomNavigationBarLandscapeLayout? landscapeLayout;
 }
 
-class PlatformNavBar extends PlatformWidgetBase<CupertinoTabBar, BottomAppBar> {
+class PlatformNavBar
+    extends PlatformWidgetBase<CupertinoTabBar, BottomAppBar, Widget> {
   final Key? widgetKey;
   final Color? backgroundColor;
 
@@ -210,5 +211,10 @@ class PlatformNavBar extends PlatformWidgetBase<CupertinoTabBar, BottomAppBar> {
           ),
       height: data?.height ?? _kTabBarHeight,
     );
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 }

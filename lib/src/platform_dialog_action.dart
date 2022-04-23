@@ -139,7 +139,7 @@ class CupertinoDialogActionData extends _BaseData {
 }
 
 class PlatformDialogAction
-    extends PlatformWidgetBase<CupertinoDialogAction, Widget> {
+    extends PlatformWidgetBase<CupertinoDialogAction, Widget, Widget> {
   final Key? widgetKey;
   final Widget? child;
   final void Function()? onPressed;
@@ -245,5 +245,10 @@ class PlatformDialogAction
       onPressed: data?.onPressed ?? onPressed,
       textStyle: data?.textStyle,
     );
+  }
+
+  @override
+  Widget createFluentWidget(BuildContext context) {
+    return createMaterialWidget(context);
   }
 }
